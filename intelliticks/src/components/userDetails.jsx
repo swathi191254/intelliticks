@@ -1,113 +1,119 @@
-import { useState, useRef, useEffect } from "react";
+import React from "react";
 
-const inistate = {
+import {useState, useRef, useEffect} from "react";
+
+const initstate = {
     name : "",
-    discription : "",
-    size : "",
-    
+    age : "",
+    address : "",
+    department : "",
+    salary : "",
+    isMarried : "",
+    profilepic : "",
 }
-
 export const Userdetails = () => {
-    const [ form, setForm ] = useState(inistate);
-    const [ details, setDetails] = useState([])
 
+    const [ form, setForm] = useState(initstate);
+    const [details, setDetails] = useState([]);
     const fileref = useRef();
+
 
     useEffect(() => {
         getDetails();
     },[])
-
-    const handleChange = (e) => {
-        let { name, value,checked,type } = e.target
-        value = type === "checkbox" ? checked : value;
-        setForm((prev) => ({...prev,[name]:value}));
-    }
 
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log(form);
     }
 
+    const handleChange = (e) => {
+        let {name,value,type,checked} = e.target;
+        value = type === "checkbox" ? checked : value;
+        setForm((prev) => ({...prev,[name]:value}))
+    }
+
     const postData = () => {
+
         const payload = {
-            name:form.name,
-            discription:form.discription,
-            size:form.size            
-
-
+            name : form.name,
+            age : form.age,
+            address : form.address,
+            salary : form.salary,
+            department : form.department,
+            isMarried : form.isMarried,
             
-        }
-        fetch("https://mailchimpabc.herokuapp.com/data",{
-            method:"POST",
+            status: false,
+        };
+
+        fetch("",{
+            method : "POST",
             body : JSON.stringify(payload),
-            headers: {
-                "content-type":"application/json",
-            }
-        }).then(()=> {
+            headers : {
+                "content-type" : "application/json",
+            },
+        })
+        .then(() => {
             getDetails();
             setForm("")
         })
     }
 
     const getDetails = () => {
-        fetch("https://mailchimpabc.herokuapp.com/data")
-        .then(d => d.json())
+        fetch("http://localhost:3005/users")
+        .then((d) => d.json())
         .then((res) => {
             setDetails(res)
-        });
+        })
     }
 
-    const {name,size,discription} = form;
+    const handleClickDelete = (i) => {
+        let result = details.filter((user,index) => index!==i)
+        setDetails(result);
+    }
+
+    const {name,age,address,salary,isMarried,department}=form;
 
     return (
-        <>
         <div id="flex">
             <form onSubmit={handleSubmit}>
-              <label>Name</label>
-              <br />
-              <input name="name" value={name} onChange={handleChange} type="text" placeholder="Enter your name"/>  
-              <br />
-              <br />
-              <label>discription</label>
-              <br />
-              <input name="discription" value={discription} onChange={handleChange} type="text" placeholder="Enter your discription"/>
-              <br />
-              <br />
-              <label>Size</label> 
-              <br />
-              <input name="size" value={size} onChange={handleChange}  placeholder="Enter size"/>
-              <br />
-              <br />
-              
-              
-             
-              
-              <input onClick={postData} id="submitbtn" type="submit" />  
+                <label>Name</label>
+                <br/>
+                <input type="text" placeholder="eneter the name" value={name} name="name" onChange={handleChange} />
+                <br/>
+                <bt/>
+                <label>Age</label>
+                <br />
+                <input type="number" placeholder="eneter your age" value={age} name="age" onChange={handleChange} />
+                <br />
+                <br />
+                <label>Address</label>
+                <br />
+                <input type="text" placeholder="eneter your address" value={address} name="address" onChange={handleChange} />
+                <br />
+                <br />
+                <button type="button" id="submitbtn" onClick={postData}>submit</button>
+                
             </form>
-
             <table>
                 <tr>
-                    <th>Name</th>
-                    <th>Discription</th>
-                    <th>Size</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Address</th>
+                
                 </tr>
-
-                {details.map((e,i)=>
-                    <tr key={i}>
-                        <td>{e.name}</td>
-                        <td>{e.discription}</td>
-                        <td>{e.size}</td>
-                    </tr>
+                {details.map((e,i) => 
+                <tr key={i}>
+                    <td>{e.name}</td>
+                    <td>{e.age}</td>
+                    <td>{e.address}</td> 
+                   
+                    <button onClick={() => handleClickDelete(i)}>Delete</button>
+                </tr>
                 )}
             </table>
         </div>
-        </>
     )
 }
 
 export default Userdetails;
-
-
-
-
-
